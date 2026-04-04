@@ -116,6 +116,7 @@
             color: rgba(0, 0, 0, 0.9);
         }
 
+        /* --- Updated Volume Slider for Firefox Compatibility --- */
         #audio-volume-slider {
             width: 150px;
             height: 20px;
@@ -127,11 +128,22 @@
             display: none; 
         }
 
+        /* Track - Webkit */
         #audio-volume-slider::-webkit-slider-runnable-track {
             height: 10px;
             background: linear-gradient(to right, rgba(102,102,102,0.5) 0%, rgba(102,102,102,0.5) var(--progress, 15%), rgba(255,255,255,0.5) var(--progress, 15%), rgba(255,255,255,0.5) 100%);
             border-radius: 10px;
         }
+
+        /* Track - Firefox */
+        #audio-volume-slider::-moz-range-track {
+            height: 10px;
+            background: linear-gradient(to right, rgba(102,102,102,0.5) 0%, rgba(102,102,102,0.5) var(--progress, 15%), rgba(255,255,255,0.5) var(--progress, 15%), rgba(255,255,255,0.5) 100%);
+            border-radius: 10px;
+            border: none;
+        }
+
+        /* Thumb - Webkit */
         #audio-volume-slider::-webkit-slider-thumb {
             -webkit-appearance: none;
             width: 22px;
@@ -139,7 +151,17 @@
             border-radius: 50%;
             background: #ccc;
             border: 2px solid #ccc;
-            margin-top: -6px;
+            margin-top: -6px; /* Centers thumb on track in Webkit */
+        }
+
+        /* Thumb - Firefox */
+        #audio-volume-slider::-moz-range-thumb {
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            background: #ccc;
+            border: 2px solid #ccc;
+            cursor: pointer;
         }
 
         #volume-tooltip {
@@ -247,7 +269,6 @@
     <script>
         const targetDate = new Date('2026-04-12T19:26:30Z');
         
-        // --- Updated Playlist ---
         const audioSources = [
             'https://res.cloudinary.com/drt26t0eg/video/upload/v1775274344/Heaven_Pierce_Her_-_Event_Horizon_Reach_for_the_Sun_and_Burn_Burn_Burn_ULTRAKILL_8-3_Theme_3_dbwg4m.mp3',
             'https://res.cloudinary.com/drt26t0eg/video/upload/v1775274350/Heaven_Pierce_Her_-_Never_Odd_or_Even_ULTRAKILL_8-2_Theme_1_gg7iq1.mp3',
@@ -308,7 +329,6 @@
         });
 
         function createBackgroundAudio() {
-            // Picks a random starting song
             currentTrackIndex = Math.floor(Math.random() * audioSources.length);
             const audio = document.createElement('audio');
             audio.src = audioSources[currentTrackIndex];
