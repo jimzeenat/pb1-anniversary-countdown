@@ -86,7 +86,10 @@
             pointer-events: auto;
         }
 
-        #shuffle-button, #audio-toggle-button {
+        #shuffle-button {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
             padding: 10px 20px;
             border-radius: 10px;
             background: rgba(255, 255, 255, 0.25); 
@@ -101,13 +104,28 @@
             transition: background 0.3s, color 0.3s;
         }
 
-        #shuffle-button {
+        #visualizer-canvas {
             position: absolute;
             left: 50%;
             transform: translateX(-50%);
+            bottom: 60px; 
+            width: 320px;
+            height: 100px;
+            display: none;
+            pointer-events: none;
         }
 
         #audio-toggle-button {
+            padding: 10px 20px;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.25); 
+            color: rgba(0, 0, 0, 0.6); 
+            font-family: 'Lexend', sans-serif;
+            font-size: 1rem;
+            cursor: pointer;
+            border: none;
+            user-select: none;
+            display: none;
             min-width: 80px;
         }
 
@@ -116,7 +134,6 @@
             color: rgba(0, 0, 0, 0.9);
         }
 
-        /* new volume slider for firefox */
         #audio-volume-slider {
             width: 150px;
             height: 20px;
@@ -128,22 +145,11 @@
             display: none; 
         }
 
-        /* track for webkit */
         #audio-volume-slider::-webkit-slider-runnable-track {
             height: 10px;
             background: linear-gradient(to right, rgba(102,102,102,0.5) 0%, rgba(102,102,102,0.5) var(--progress, 15%), rgba(255,255,255,0.5) var(--progress, 15%), rgba(255,255,255,0.5) 100%);
             border-radius: 10px;
         }
-
-        /* track for firefox */
-        #audio-volume-slider::-moz-range-track {
-            height: 10px;
-            background: linear-gradient(to right, rgba(102,102,102,0.5) 0%, rgba(102,102,102,0.5) var(--progress, 15%), rgba(255,255,255,0.5) var(--progress, 15%), rgba(255,255,255,0.5) 100%);
-            border-radius: 10px;
-            border: none;
-        }
-
-        /* Thumb - Webkit */
         #audio-volume-slider::-webkit-slider-thumb {
             -webkit-appearance: none;
             width: 22px;
@@ -151,10 +157,14 @@
             border-radius: 50%;
             background: #ccc;
             border: 2px solid #ccc;
-            margin-top: -6px; /* centers thumb on track in webkit */
+            margin-top: -6px;
         }
-
-        /* Thumb - Firefox */
+        #audio-volume-slider::-moz-range-track {
+            height: 10px;
+            background: linear-gradient(to right, rgba(102,102,102,0.5) 0%, rgba(102,102,102,0.5) var(--progress, 15%), rgba(255,255,255,0.5) var(--progress, 15%), rgba(255,255,255,0.5) 100%);
+            border-radius: 10px;
+            border: none;
+        }
         #audio-volume-slider::-moz-range-thumb {
             width: 22px;
             height: 22px;
@@ -240,7 +250,7 @@
     <img id="top-right-image" src="https://res.cloudinary.com/drt26t0eg/image/upload/v1775270326/image-removebg-preview_7_yr446z.png" alt="Trigger Image">
     
     <div class="title-container" id="title-box">
-        <h1>Countdown to Point Blank 1 year anniversary (April 12, 2026 at 01:26:30 PM CST)</h1>
+        <h1 id="main-title">Syncing...</h1>
     </div>
     
     <div class="in-box">in</div>
@@ -262,12 +272,48 @@
             <input id="audio-volume-slider" type="range" min="0" max="100" value="15" aria-label="Volume slider">
             <div id="volume-tooltip">15%</div>
         </div>
+        
+        <canvas id="visualizer-canvas"></canvas>
         <button id="shuffle-button">shuffle</button>
+        
         <div id="audio-toggle-button">pause</div>
     </div>
 
     <script>
-        const targetDate = new Date('2026-04-12T19:26:30Z');
+        // TARGET: April 12, 2026, 01:26:30 PM CDT (UTC-5)
+        // Since Chicago is in CDT in April, the UTC conversion is 18:26:30Z.
+        const targetDateUTC = new Date('2026-04-12T18:26:30Z'); 
+
+        function getTZAbbreviation() {
+            try {
+                // Get the short timezone name directly from the user's system locale
+                const parts = new Intl.DateTimeFormat(undefined, {
+                    timeZoneName: 'short'
+                }).formatToParts(new Date());
+                const tzPart = parts.find(p => p.type === 'timeZoneName');
+                return tzPart ? tzPart.value : 'Local';
+            } catch (e) {
+                return 'Local';
+            }
+        }
+
+        function formatLocalTitle() {
+            const tz = getTZAbbreviation();
+            const options = { 
+                month: 'long', 
+                day: 'numeric', 
+                year: 'numeric', 
+                hour: '2-digit', 
+                minute: '2-digit', 
+                second: '2-digit',
+                hour12: true 
+            };
+            // Format the target time relative to the user's current clock
+            const localTimeString = targetDateUTC.toLocaleString(undefined, options);
+            document.getElementById('main-title').textContent = `Countdown to Point Blank 1 year anniversary (${localTimeString} ${tz})`;
+        }
+
+        formatLocalTitle();
         
         const audioSources = [
             'https://res.cloudinary.com/drt26t0eg/video/upload/v1775274344/Heaven_Pierce_Her_-_Event_Horizon_Reach_for_the_Sun_and_Burn_Burn_Burn_ULTRAKILL_8-3_Theme_3_dbwg4m.mp3',
@@ -276,8 +322,7 @@
             'https://res.cloudinary.com/drt26t0eg/video/upload/v1775274562/Every_End..._xplx9a.mp3',
             'https://res.cloudinary.com/drt26t0eg/video/upload/v1775262154/places2_Battle_For_BFDI_1_enhu2j.mp3',
             'https://res.cloudinary.com/drt26t0eg/video/upload/v1775264301/ROBLOX_Jeff_Syndicate_-_Hip_Hop_1-timestrech-timestrech_qo09oi.mp3',
-            'https://res.cloudinary.com/drt26t0eg/video/upload/v1775262169/Places_Places2_unofficial_Battle_for_BFDI_Original_Soundtrack_visualizer_uvug8p.mp3' /* but if you close your eyes does it almost feel like nothing changed at all */
-            'https://res.cloudinary.com/drt26t0eg/video/upload/v1775279897/Darude_-_Sandstorm_fqhzrz.mp3' /* he was just trying to ask the name of the song */
+            'https://res.cloudinary.com/drt26t0eg/video/upload/v1775262169/Places_Places2_unofficial_Battle_for_BFDI_Original_Soundtrack_visualizer_uvug8p.mp3'
         ];
 
         const galleryImages = [
@@ -293,22 +338,37 @@
             "https://res.cloudinary.com/drt26t0eg/image/upload/v1775273178/60db29ef-7c2e-4927-bdb2-61abba40a940.png",
             "https://res.cloudinary.com/drt26t0eg/image/upload/v1775273161/1925bd92-a638-4dfd-9276-ca2c0d3f5672.png",
             "https://res.cloudinary.com/drt26t0eg/image/upload/v1775272338/lost_media_car_sehdls.png",
-            "https://res.cloudinary.com/drt26t0eg/image/upload/v1775271434/4a957858-02aa-482a-bb86-c0dc5ba0b8a1.png" 
+            "https://res.cloudinary.com/drt26t0eg/image/upload/v1775271434/4a957858-02aa-482a-bb86-c0dc5ba0b8a1.png"
         ];
         
         let audioStarted = false;
         let bgAudio = null;
+        let audioContext = null;
+        let analyserNode = null;
         let titleClickCount = 0;
         let galleryIndex = -1;
         let currentTrackIndex = -1;
 
+        const canvas = document.getElementById('visualizer-canvas');
+        const ctx = canvas.getContext('2d');
+        const barCount = 30; 
+        const lightBlueMain = 'rgba(173, 216, 230, 0.8)'; 
+        const lightBlueLine = 'rgba(173, 216, 230, 0.2)'; 
+        let drawVisualizerFrame;
+
         function updateCountdown() {
             const now = new Date();
-            const diff = targetDate - now;
+            const diff = targetDateUTC - now;
+            
             if (diff <= 0) {
-                document.getElementById('countdown-container').classList.add('finished');
+                document.getElementById('count-days').textContent = 0;
+                document.getElementById('count-hours').textContent = 0;
+                document.getElementById('count-minutes').textContent = 0;
+                document.getElementById('count-seconds').textContent = 0;
+                document.getElementById('count-milliseconds').textContent = 0;
                 return;
             }
+            
             document.getElementById('count-days').textContent = Math.floor(diff / (1000 * 60 * 60 * 24));
             document.getElementById('count-hours').textContent = Math.floor((diff / (1000 * 60 * 60)) % 24);
             document.getElementById('count-minutes').textContent = Math.floor((diff / 1000 / 60) % 60);
@@ -329,17 +389,77 @@
             }
         });
 
-        function createBackgroundAudio() {
-            currentTrackIndex = Math.floor(Math.random() * audioSources.length);
+        function setupVisualizer() {
+            if (!audioContext) {
+                audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                analyserNode = audioContext.createAnalyser();
+                analyserNode.fftSize = 128; 
+                analyserNode.smoothingTimeConstant = 0.4; 
+                analyserNode.minDecibels = -85; 
+                analyserNode.maxDecibels = -20; 
+                canvas.style.display = 'block';
+            }
+            const sourceNode = audioContext.createMediaElementSource(bgAudio);
+            sourceNode.connect(analyserNode);
+            analyserNode.connect(audioContext.destination);
+            drawVisualizer();
+        }
+
+        function drawVisualizer() {
+            if (drawVisualizerFrame) cancelAnimationFrame(drawVisualizerFrame);
+            const dataArray = new Uint8Array(analyserNode.frequencyBinCount);
+            canvas.width = canvas.offsetWidth;
+            canvas.height = canvas.offsetHeight;
+            const gap = 2;
+            const totalGapWidth = gap * (barCount - 1);
+            const barWidth = (canvas.width - totalGapWidth) / barCount;
+            const centerY = canvas.height / 2;
+
+            function render() {
+                if (!bgAudio.paused) analyserNode.getByteFrequencyData(dataArray);
+                else dataArray.fill(0);
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                ctx.fillStyle = lightBlueLine;
+                ctx.fillRect(0, centerY - 1, canvas.width, 2);
+                ctx.fillStyle = lightBlueMain;
+                for (let i = 0; i < barCount; i++) {
+                    const value = dataArray[i]; 
+                    const percentHeight = value / 255;
+                    const mainMaxHeight = centerY - 5;
+                    const mainHeight = mainMaxHeight * percentHeight;
+                    const x = i * (barWidth + gap);
+                    ctx.fillRect(x, centerY - mainHeight, barWidth, mainHeight);
+                    const mirrorHeight = mainHeight * 0.7;
+                    ctx.fillRect(x, centerY, barWidth, mirrorHeight);
+                }
+                drawVisualizerFrame = requestAnimationFrame(render);
+            }
+            render();
+        }
+
+        function createAudioTag(index) {
+            if (bgAudio) {
+                bgAudio.pause();
+                document.body.removeChild(bgAudio);
+            }
             const audio = document.createElement('audio');
-            audio.src = audioSources[currentTrackIndex];
+            audio.crossOrigin = "anonymous"; 
+            audio.src = audioSources[index];
             audio.loop = true;
-            audio.volume = 0.15;
+            const vol = document.getElementById('audio-volume-slider').value;
+            audio.volume = vol / 100; 
             document.body.appendChild(audio);
             bgAudio = audio;
+            setupVisualizer();
+            audio.play().catch(err => console.error("Autoplay blocked:", err));
+        }
+
+        function createBackgroundAudio() {
+            currentTrackIndex = Math.floor(Math.random() * audioSources.length);
+            createAudioTag(currentTrackIndex);
             document.getElementById('audio-toggle-button').style.display = 'block';
             document.getElementById('shuffle-button').style.display = 'block';
-            audio.play();
+            document.getElementById('audio-toggle-button').textContent = 'pause';
         }
 
         document.addEventListener('click', () => {
@@ -364,8 +484,7 @@
             }
             const newIndex = otherIndices[Math.floor(Math.random() * otherIndices.length)];
             currentTrackIndex = newIndex;
-            bgAudio.src = audioSources[currentTrackIndex];
-            bgAudio.play();
+            createAudioTag(currentTrackIndex);
             document.getElementById('audio-toggle-button').textContent = 'pause';
         });
 
@@ -388,4 +507,4 @@
         setInterval(updateCountdown, 1);
     </script>
 </body>
-</html> 
+</html>
