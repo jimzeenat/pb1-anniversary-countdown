@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>point blank 1 anniversary</title>
+    <style>
+        @font-face {
+            font-family: 'Lexend';
+            src: url('https://res.cloudinary.com/drt26t0eg/raw/upload/v1775263317/Lexend-Medium_cba2j4.ttf') format('truetype');
+            font-weight: normal;
+            font-style: normal;
+            font-display: swap;
+        }
+
+        html, body {
+            overflow: hidden;
+            height: 100%;
+        }
+        body {
+            font-family: 'Lexend', Arial, sans-serif;
+            text-align: center;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background: #4da6ff;
+            transition: background 0.5s ease-in-out;
+            position: relative;
+        }
+
+        #top-right-image {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            max-width: 160px;
+            height: auto;
+            z-index: 20;
+            cursor: pointer;
+        }
+
+        #gallery-display {
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            max-height: 150px;
+            width: auto;
+            display: none; 
+            z-index: 15;
+            border: 4px solid #000;
+            box-sizing: border-box;
+        }
+
+        #audio-start-box {
+            position: absolute;
+            bottom: 120px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 12px 20px;
+            border: 3px solid #000;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0);
+            color: #000;
+            font-size: 1em;
+            cursor: pointer;
+            animation: fade 1.5s ease-in-out infinite;
+        }
+
+        .controls-footer {
+            position: absolute;
+            bottom: 60px;
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 40px;
+            box-sizing: border-box;
+            pointer-events: none;
+        }
+
+        .controls-footer > * {
+            pointer-events: auto;
+        }
+
+        #shuffle-button, #audio-toggle-button {
+            padding: 10px 20px;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.25); 
+            color: rgba(0, 0, 0, 0.6); 
+            font-family: 'Lexend', sans-serif;
+            font-size: 1rem;
+            cursor: pointer;
+            border: none;
+            user-select: none;
+            display: none;
+            white-space: nowrap;
+            transition: background 0.3s, color 0.3s;
+        }
+
+        #shuffle-button {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        #audio-toggle-button {
+            min-width: 80px;
+        }
+
+        #shuffle-button:hover, #audio-toggle-button:hover {
+            background: rgba(255, 255, 255, 0.4);
+            color: rgba(0, 0, 0, 0.9);
+        }
+
+        #audio-volume-slider {
+            width: 150px;
+            height: 20px;
+            cursor: pointer;
+            background: transparent;
+            border: none;
+            -webkit-appearance: none;
+            appearance: none;
+            display: none; 
+        }
+
+        #audio-volume-slider::-webkit-slider-runnable-track {
+            height: 10px;
+            background: linear-gradient(to right, rgba(102,102,102,0.5) 0%, rgba(102,102,102,0.5) var(--progress, 15%), rgba(255,255,255,0.5) var(--progress, 15%), rgba(255,255,255,0.5) 100%);
+            border-radius: 10px;
+        }
+        #audio-volume-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            background: #ccc;
+            border: 2px solid #ccc;
+            margin-top: -6px;
+        }
+
+        #volume-tooltip {
+            position: absolute;
+            bottom: 45px;
+            left: 50px;
+            background: #000;
+            color: #fff;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            display: none;
+        }
+
+        #audio-volume-slider:hover + #volume-tooltip {
+            display: block;
+        }
+
+        @keyframes fade {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
+        }
+
+        .title-container {
+            border: 4px solid #000;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.3);
+            cursor: pointer;
+        }
+
+        .countdown-container {
+            border: 4px solid #000;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.3);
+            transition: border-color 0.5s;
+        }
+
+        .countdown-grid {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 16px;
+        }
+
+        .countdown-box {
+            width: 128px;
+            height: 128px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            border: 3px solid #000;
+            border-radius: 16px;
+            background: transparent;
+        }
+
+        .countdown-box .count-value {
+            font-size: 2rem;
+            font-weight: 700;
+        }
+
+        .in-box {
+            width: fit-content;
+            min-width: 180px;
+            padding: 18px 30px;
+            margin: 0 auto 20px;
+            font-size: 1.5rem;
+        }
+    </style>
+</head>
+<body>
+    <img id="gallery-display" src="" alt="Gallery Image">
+    <img id="top-right-image" src="https://res.cloudinary.com/drt26t0eg/image/upload/v1775270326/image-removebg-preview_7_yr446z.png" alt="Trigger Image">
+    
+    <div class="title-container" id="title-box">
+        <h1>Countdown to Point Blank 1 year anniversary (April 12, 2026 at 01:26:30 PM CST)</h1>
+    </div>
+    
+    <div class="in-box">in</div>
+    
+    <div class="countdown-container" id="countdown-container">
+        <div class="countdown-grid">
+            <div class="countdown-box"><div class="count-value" id="count-days">0</div><div class="count-label">days</div></div>
+            <div class="countdown-box"><div class="count-value" id="count-hours">0</div><div class="count-label">hours</div></div>
+            <div class="countdown-box"><div class="count-value" id="count-minutes">0</div><div class="count-label">minutes</div></div>
+            <div class="countdown-box"><div class="count-value" id="count-seconds">0</div><div class="count-label">seconds</div></div>
+            <div class="countdown-box"><div class="count-value" id="count-milliseconds">0</div><div class="count-label">milliseconds</div></div>
+        </div>
+    </div>
+
+    <div id="audio-start-box">Click to start audio</div>
+
+    <div class="controls-footer">
+        <div>
+            <input id="audio-volume-slider" type="range" min="0" max="100" value="15" aria-label="Volume slider">
+            <div id="volume-tooltip">15%</div>
+        </div>
+        <button id="shuffle-button">shuffle</button>
+        <div id="audio-toggle-button">pause</div>
+    </div>
+
+    <script>
+        const targetDate = new Date('2026-04-12T19:26:30Z');
+        
+        // --- Updated Playlist ---
+        const audioSources = [
+            'https://res.cloudinary.com/drt26t0eg/video/upload/v1775274344/Heaven_Pierce_Her_-_Event_Horizon_Reach_for_the_Sun_and_Burn_Burn_Burn_ULTRAKILL_8-3_Theme_3_dbwg4m.mp3',
+            'https://res.cloudinary.com/drt26t0eg/video/upload/v1775274350/Heaven_Pierce_Her_-_Never_Odd_or_Even_ULTRAKILL_8-2_Theme_1_gg7iq1.mp3',
+            'https://res.cloudinary.com/drt26t0eg/video/upload/v1775274546/Widge_jounmh.mp3',
+            'https://res.cloudinary.com/drt26t0eg/video/upload/v1775274562/Every_End..._xplx9a.mp3',
+            'https://res.cloudinary.com/drt26t0eg/video/upload/v1775262154/places2_Battle_For_BFDI_1_enhu2j.mp3',
+            'https://res.cloudinary.com/drt26t0eg/video/upload/v1775264301/ROBLOX_Jeff_Syndicate_-_Hip_Hop_1-timestrech-timestrech_qo09oi.mp3',
+            'https://res.cloudinary.com/drt26t0eg/video/upload/v1775262169/Places_Places2_unofficial_Battle_for_BFDI_Original_Soundtrack_visualizer_uvug8p.mp3'
+        ];
+
+        const galleryImages = [
+            "https://res.cloudinary.com/drt26t0eg/image/upload/v1775273850/5b00acd4-c25d-434a-801d-2ae97a562619.png",
+            "https://res.cloudinary.com/drt26t0eg/image/upload/v1775273499/f5a2302a-155f-4c82-9c7a-f576b7e04acc.png",
+            "https://res.cloudinary.com/drt26t0eg/image/upload/v1775273493/7ebd8c11-20da-4cff-bd35-978e8f006f45.png",
+            "https://res.cloudinary.com/drt26t0eg/image/upload/v1775273461/c988bc3c-0a7f-4c27-949f-1ac0bc30a63e.png",
+            "https://res.cloudinary.com/drt26t0eg/image/upload/v1775273443/a1569b1c-e1dc-4fa5-87d1-8bb4c4d254fd.png",
+            "https://res.cloudinary.com/drt26t0eg/image/upload/v1775273399/01eeea0e-9086-4cb1-a182-087dfa80a8d2.png",
+            "https://res.cloudinary.com/drt26t0eg/image/upload/v1775273325/4570497f-c266-461f-8111-5174c01f2e99.png",
+            "https://res.cloudinary.com/drt26t0eg/image/upload/v1775273318/61a5b3d7-bf1f-4208-9191-625fe4c3052a.png",
+            "https://res.cloudinary.com/drt26t0eg/image/upload/v1775273209/3db7eb82-2047-44ee-af9a-bcc2b67ce3ed.png",
+            "https://res.cloudinary.com/drt26t0eg/image/upload/v1775273178/60db29ef-7c2e-4927-bdb2-61abba40a940.png",
+            "https://res.cloudinary.com/drt26t0eg/image/upload/v1775273161/1925bd92-a638-4dfd-9276-ca2c0d3f5672.png",
+            "https://res.cloudinary.com/drt26t0eg/image/upload/v1775272338/lost_media_car_sehdls.png",
+            "https://res.cloudinary.com/drt26t0eg/image/upload/v1775271434/4a957858-02aa-482a-bb86-c0dc5ba0b8a1.png"
+        ];
+        
+        let audioStarted = false;
+        let bgAudio = null;
+        let titleClickCount = 0;
+        let galleryIndex = -1;
+        let currentTrackIndex = -1;
+
+        function updateCountdown() {
+            const now = new Date();
+            const diff = targetDate - now;
+            if (diff <= 0) {
+                document.getElementById('countdown-container').classList.add('finished');
+                return;
+            }
+            document.getElementById('count-days').textContent = Math.floor(diff / (1000 * 60 * 60 * 24));
+            document.getElementById('count-hours').textContent = Math.floor((diff / (1000 * 60 * 60)) % 24);
+            document.getElementById('count-minutes').textContent = Math.floor((diff / 1000 / 60) % 60);
+            document.getElementById('count-seconds').textContent = Math.floor((diff / 1000) % 60);
+            document.getElementById('count-milliseconds').textContent = diff % 1000;
+        }
+
+        document.getElementById('top-right-image').addEventListener('click', (e) => {
+            e.stopPropagation();
+            galleryIndex++;
+            const galleryImg = document.getElementById('gallery-display');
+            if (galleryIndex < galleryImages.length) {
+                galleryImg.src = galleryImages[galleryIndex];
+                galleryImg.style.display = 'block';
+            } else {
+                galleryImg.style.display = 'none';
+                galleryIndex = -1;
+            }
+        });
+
+        function createBackgroundAudio() {
+            // Picks a random starting song
+            currentTrackIndex = Math.floor(Math.random() * audioSources.length);
+            const audio = document.createElement('audio');
+            audio.src = audioSources[currentTrackIndex];
+            audio.loop = true;
+            audio.volume = 0.15;
+            document.body.appendChild(audio);
+            bgAudio = audio;
+            document.getElementById('audio-toggle-button').style.display = 'block';
+            document.getElementById('shuffle-button').style.display = 'block';
+            audio.play();
+        }
+
+        document.addEventListener('click', () => {
+            if (audioStarted) return;
+            audioStarted = true;
+            document.getElementById('audio-start-box').style.display = 'none';
+            document.getElementById('audio-volume-slider').style.display = 'block';
+            createBackgroundAudio();
+        }, { once: true });
+        
+        document.getElementById('audio-toggle-button').addEventListener('click', (e) => {
+            e.stopPropagation();
+            if (bgAudio.paused) { bgAudio.play(); e.target.textContent = 'pause'; }
+            else { bgAudio.pause(); e.target.textContent = 'play'; }
+        });
+
+        document.getElementById('shuffle-button').addEventListener('click', (e) => {
+            e.stopPropagation();
+            const otherIndices = [];
+            for (let i = 0; i < audioSources.length; i++) {
+                if (i !== currentTrackIndex) otherIndices.push(i);
+            }
+            const newIndex = otherIndices[Math.floor(Math.random() * otherIndices.length)];
+            currentTrackIndex = newIndex;
+            bgAudio.src = audioSources[currentTrackIndex];
+            bgAudio.play();
+            document.getElementById('audio-toggle-button').textContent = 'pause';
+        });
+
+        document.getElementById('audio-volume-slider').addEventListener('input', (e) => {
+            if (!bgAudio) return;
+            bgAudio.volume = e.target.value / 100;
+            e.target.style.setProperty('--progress', e.target.value + '%');
+            document.getElementById('volume-tooltip').textContent = e.target.value + '%';
+        });
+
+        document.getElementById('title-box').addEventListener('click', (e) => {
+            e.stopPropagation();
+            titleClickCount++;
+            const step = titleClickCount % 3;
+            if (step === 1) document.body.style.background = "url('https://res.cloudinary.com/drt26t0eg/image/upload/v1775268988/ff19ae1f-3883-4047-a793-7af46830382a.png') no-repeat center/cover fixed";
+            else if (step === 2) document.body.style.background = "url('https://res.cloudinary.com/drt26t0eg/image/upload/v1775270230/9f511fe2-ae9e-4ec0-8755-5d039be008df.png') no-repeat center/cover fixed";
+            else document.body.style.background = "#4da6ff";
+        });
+
+        setInterval(updateCountdown, 1);
+    </script>
+</body>
+</html>
