@@ -116,7 +116,7 @@
             color: rgba(0, 0, 0, 0.9);
         }
 
-        /* --- Updated Volume Slider for Firefox Compatibility --- */
+        /* new volume slider for firefox */
         #audio-volume-slider {
             width: 150px;
             height: 20px;
@@ -128,14 +128,14 @@
             display: none; 
         }
 
-        /* Track - Webkit */
+        /* track for webkit */
         #audio-volume-slider::-webkit-slider-runnable-track {
             height: 10px;
             background: linear-gradient(to right, rgba(102,102,102,0.5) 0%, rgba(102,102,102,0.5) var(--progress, 15%), rgba(255,255,255,0.5) var(--progress, 15%), rgba(255,255,255,0.5) 100%);
             border-radius: 10px;
         }
 
-        /* Track - Firefox */
+        /* track for firefox */
         #audio-volume-slider::-moz-range-track {
             height: 10px;
             background: linear-gradient(to right, rgba(102,102,102,0.5) 0%, rgba(102,102,102,0.5) var(--progress, 15%), rgba(255,255,255,0.5) var(--progress, 15%), rgba(255,255,255,0.5) 100%);
@@ -151,7 +151,7 @@
             border-radius: 50%;
             background: #ccc;
             border: 2px solid #ccc;
-            margin-top: -6px; /* Centers thumb on track in Webkit */
+            margin-top: -6px; /* centers thumb on track in webkit */
         }
 
         /* Thumb - Firefox */
@@ -276,7 +276,8 @@
             'https://res.cloudinary.com/drt26t0eg/video/upload/v1775274562/Every_End..._xplx9a.mp3',
             'https://res.cloudinary.com/drt26t0eg/video/upload/v1775262154/places2_Battle_For_BFDI_1_enhu2j.mp3',
             'https://res.cloudinary.com/drt26t0eg/video/upload/v1775264301/ROBLOX_Jeff_Syndicate_-_Hip_Hop_1-timestrech-timestrech_qo09oi.mp3',
-            'https://res.cloudinary.com/drt26t0eg/video/upload/v1775262169/Places_Places2_unofficial_Battle_for_BFDI_Original_Soundtrack_visualizer_uvug8p.mp3'
+            'https://res.cloudinary.com/drt26t0eg/video/upload/v1775262169/Places_Places2_unofficial_Battle_for_BFDI_Original_Soundtrack_visualizer_uvug8p.mp3' /* but if you close your eyes does it almost feel like nothing changed at all */
+            'https://res.cloudinary.com/drt26t0eg/video/upload/v1775279897/Darude_-_Sandstorm_fqhzrz.mp3' /* he was just trying to ask the name of the song */
         ];
 
         const galleryImages = [
@@ -292,7 +293,7 @@
             "https://res.cloudinary.com/drt26t0eg/image/upload/v1775273178/60db29ef-7c2e-4927-bdb2-61abba40a940.png",
             "https://res.cloudinary.com/drt26t0eg/image/upload/v1775273161/1925bd92-a638-4dfd-9276-ca2c0d3f5672.png",
             "https://res.cloudinary.com/drt26t0eg/image/upload/v1775272338/lost_media_car_sehdls.png",
-            "https://res.cloudinary.com/drt26t0eg/image/upload/v1775271434/4a957858-02aa-482a-bb86-c0dc5ba0b8a1.png"
+            "https://res.cloudinary.com/drt26t0eg/image/upload/v1775271434/4a957858-02aa-482a-bb86-c0dc5ba0b8a1.png" 
         ];
         
         let audioStarted = false;
@@ -387,4 +388,4 @@
         setInterval(updateCountdown, 1);
     </script>
 </body>
-</html>
+</html> 
