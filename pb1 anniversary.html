@@ -35,7 +35,6 @@
         #now-playing-container.hide { top: -120px; transition: top 0.5s ease-in-out; }
         #now-playing-text { font-size: 0.9rem; color: #000; text-align: left; flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         
-        /* UPDATED: Removed background and border from the disc */
         #spinning-disc { 
             width: 50px; 
             height: 50px; 
@@ -114,7 +113,16 @@
         #audio-volume-slider:hover + #volume-tooltip { display: block; }
         @keyframes fade { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
 
-        .title-container, .countdown-container { border: 4px solid #000; border-radius: 10px; padding: 20px; box-shadow: inset 0 0 10px rgba(0,0,0,0.3); }
+        .title-container, .countdown-container { border: 4px solid #000; border-radius: 10px; padding: 20px; box-shadow: inset 0 0 10px rgba(0,0,0,0.3); position: relative; overflow: hidden; }
+        #main-title { position: relative; z-index: 5; margin: 0; }
+        
+        /* New event overlay styling */
+        #event-overlay {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: url('https://res.cloudinary.com/drt26t0eg/image/upload/v1775286232/08187429-afeb-4b25-8e30-8f4bc8d727e3.png') no-repeat center/cover;
+            opacity: 0; transition: opacity 0.3s ease-in-out; z-index: 1; pointer-events: none;
+        }
+
         .title-container { margin-bottom: 20px; cursor: pointer; }
         .countdown-grid { display: flex; flex-wrap: wrap; justify-content: center; gap: 16px; }
         .countdown-box { width: 128px; height: 128px; display: flex; flex-direction: column; justify-content: center; align-items: center; border: 3px solid #000; border-radius: 16px; }
@@ -133,6 +141,7 @@
     <img id="top-right-image" src="https://res.cloudinary.com/drt26t0eg/image/upload/v1775270326/image-removebg-preview_7_yr446z.png" alt="Trigger Image">
     
     <div class="title-container" id="title-box">
+        <div id="event-overlay"></div>
         <h1 id="main-title">Syncing...</h1>
     </div>
     
@@ -175,7 +184,8 @@
             { name: "Every End...", url: 'https://res.cloudinary.com/drt26t0eg/video/upload/v1775274562/Every_End..._xplx9a.mp3' },
             { name: "Places 2 (BFDI)", url: 'https://res.cloudinary.com/drt26t0eg/video/upload/v1775262154/places2_Battle_For_BFDI_1_enhu2j.mp3' },
             { name: "Hip Hop 1", url: 'https://res.cloudinary.com/drt26t0eg/video/upload/v1775264301/ROBLOX_Jeff_Syndicate_-_Hip_Hop_1-timestrech-timestrech_qo09oi.mp3' },
-            { name: "Places 2 (Official)", url: 'https://res.cloudinary.com/drt26t0eg/video/upload/v1775262169/Places_Places2_unofficial_Battle_for_BFDI_Original_Soundtrack_visualizer_uvug8p.mp3' }
+            { name: "Places 2 (Official)", url: 'https://res.cloudinary.com/drt26t0eg/video/upload/v1775262169/Places_Places2_unofficial_Battle_for_BFDI_Original_Soundtrack_visualizer_uvug8p.mp3' },
+            { name: "Sandstorm", url: 'https://res.cloudinary.com/drt26t0eg/video/upload/v1775279937/Darude_-_Sandstorm_q7oarq.mp3' }
         ];
 
         function getTZAbbreviation() {
@@ -204,13 +214,24 @@
         window.onclick = () => playlistMenu.classList.remove('show');
 
         const galleryImages = ["https://res.cloudinary.com/drt26t0eg/image/upload/v1775273850/5b00acd4-c25d-434a-801d-2ae97a562619.png","https://res.cloudinary.com/drt26t0eg/image/upload/v1775273499/f5a2302a-155f-4c82-9c7a-f576b7e04acc.png","https://res.cloudinary.com/drt26t0eg/image/upload/v1775273493/7ebd8c11-20da-4cff-bd35-978e8f006f45.png","https://res.cloudinary.com/drt26t0eg/image/upload/v1775273461/c988bc3c-0a7f-4c27-949f-1ac0bc30a63e.png","https://res.cloudinary.com/drt26t0eg/image/upload/v1775273443/a1569b1c-e1dc-4fa5-87d1-8bb4c4d254fd.png","https://res.cloudinary.com/drt26t0eg/image/upload/v1775273399/01eeea0e-9086-4cb1-a182-087dfa80a8d2.png","https://res.cloudinary.com/drt26t0eg/image/upload/v1775273325/4570497f-c266-461f-8111-5174c01f2e99.png","https://res.cloudinary.com/drt26t0eg/image/upload/v1775273318/61a5b3d7-bf1f-4208-9191-625fe4c3052a.png","https://res.cloudinary.com/drt26t0eg/image/upload/v1775273209/3db7eb82-2047-44ee-af9a-bcc2b67ce3ed.png","https://res.cloudinary.com/drt26t0eg/image/upload/v1775273178/60db29ef-7c2e-4927-bdb2-61abba40a940.png","https://res.cloudinary.com/drt26t0eg/image/upload/v1775273161/1925bd92-a638-4dfd-9276-ca2c0d3f5672.png","https://res.cloudinary.com/drt26t0eg/image/upload/v1775272338/lost_media_car_sehdls.png","https://res.cloudinary.com/drt26t0eg/image/upload/v1775271434/4a957858-02aa-482a-bb86-c0dc5ba0b8a1.png"];
-        let audioStarted = false, bgAudio = null, audioContext = null, analyserNode = null, fadeGainNode = null, galleryIndex = -1, currentTrackIndex = -1, notificationTimeout = null;
+        let audioStarted = false, bgAudio = null, audioContext = null, analyserNode = null, fadeGainNode = null, galleryIndex = -1, currentTrackIndex = -1, notificationTimeout = null, eventOverlayTimeout = null;
         const canvas = document.getElementById('visualizer-canvas'), ctx = canvas.getContext('2d');
         const iconElement = document.getElementById('top-right-image');
         let drawVisualizerFrame;
 
         function updateCountdown() {
             const diff = targetDateUTC - new Date();
+            
+            // Rare 0.001% chance logic (probability: 0.00001)
+            if (Math.random() < 0.00001 && !eventOverlayTimeout) {
+                const overlay = document.getElementById('event-overlay');
+                overlay.style.opacity = '0.45';
+                eventOverlayTimeout = setTimeout(() => {
+                    overlay.style.opacity = '0';
+                    eventOverlayTimeout = null;
+                }, 10000);
+            }
+
             if (diff <= 0) { ['count-days','count-hours','count-minutes','count-seconds','count-milliseconds'].forEach(id=>document.getElementById(id).textContent=0); return; }
             document.getElementById('count-days').textContent = Math.floor(diff / 86400000);
             document.getElementById('count-hours').textContent = Math.floor((diff / 3600000) % 24);
@@ -228,6 +249,14 @@
 
         function showNowPlaying(name) {
             const container = document.getElementById('now-playing-container');
+            const disc = document.getElementById('spinning-disc');
+            
+            if (Math.random() < 0.1) {
+                disc.src = "https://res.cloudinary.com/drt26t0eg/image/upload/v1775285746/495d1f7d-26a7-4e4b-a434-5e07b12c5aa3.png";
+            } else {
+                disc.src = "https://res.cloudinary.com/drt26t0eg/image/upload/v1775282217/image-removebg-preview_8_ubbjld.png";
+            }
+
             document.getElementById('song-name-display').textContent = name;
             container.classList.remove('hide'); container.classList.add('show');
             if (notificationTimeout) clearTimeout(notificationTimeout);
